@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Google Translation
 // @namespace    http://taiho.moe/
-// @version      0.2
+// @version      0.3
 // @description  Translate tweet using google translator
 // @author       swordfeng
 // @match        https://twitter.com/*
@@ -19,6 +19,7 @@ const style = `
     border-top: 1px solid #e6ecf0;
     margin-top: 5px;
     padding: 5px 0 5px 0;
+    white-space: pre-wrap;
 }
 .google-translation-attribution {
     color: #657786;
@@ -99,20 +100,38 @@ function addTranslateBtn(tweet) {
 function clickTranslateBtn(ev) {
     let translateBtn = ev.target;
     let tweet = translateBtn.parentElement.getElementsByClassName('js-tweet-text-container')[0];
-    let tweetText = tweet.textContent;
+    let tweetText = extractText(tweet);
     translate(tweetText, {to: targetLang}).then(result => {
         translateBtn.style.display = 'none';
-        let attr = document.createElement('div');
-        attr.appendChild(document.createTextNode('Translated by Google'));
-        attr.className = 'google-translation-attribution';
-        let translateText = document.createElement('div');
-        translateText.appendChild(attr);
-        translateText.appendChild(document.createTextNode(result.text));
-        translateText.className = 'google-translation';
+        let translateText = createTranslation(result.text);
         tweet.parentElement.insertBefore(translateText, translateBtn);
     }, err => {
         console.error(err);
     });
+}
+
+function extractText(elem) {
+    if (elem.nodeName === '#text') return elem.data;
+    if (elem.nodeName[0] === '#') return '';
+    for (let i = 0; i < elem.classList.length; i++) {
+        if (elem.classList[i] === 'u-hidden') return '';
+    }
+    let result = '';
+    for (let i = 0; i < elem.childNodes.length; i++) {
+        result += extractText(elem.childNodes[i]);
+    }
+    return result;
+}
+
+function createTranslation(text) {
+    let attr = document.createElement('div');
+    attr.appendChild(document.createTextNode('Translated by Google'));
+    attr.className = 'google-translation-attribution';
+    let translateText = document.createElement('div');
+    translateText.appendChild(attr);
+    translateText.appendChild(document.createTextNode(text));
+    translateText.className = 'google-translation';
+    return translateText;
 }
 
 function setLanguage() {
