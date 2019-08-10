@@ -6,7 +6,7 @@ No warranty; use at your own risk.
 Add !s and !g to DDG search page.
 
 ## Twitter Google Translation [[install](https://github.com/swordfeng/userscript-collection/raw/master/twitter-google-translation.user.js)]
-**Note: this script is deprecated because Twitter has switched to Google Translate.**  
+**Deprecated: Twitter has switched to Google Translate.**  
 If you have other suggestions for alternative translation engine, please create an issue.
 
 A simple and dirty user-script that allows you to translate tweets with google.  
